@@ -1,7 +1,7 @@
 """FastAPI 应用装配：中间件、路由、启动/关闭钩子、鉴权依赖。
 
 启动：python run.py（或 cd backend && uvicorn app.main:app --reload）
-文档：http://localhost:8000/docs
+文档：http://localhost:8001/docs
 """
 import logging
 import sys

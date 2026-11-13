@@ -8,7 +8,7 @@
 
 ```
 enterprise_rag_agent/
-├── run.py              # 一键启动：后端(:8000) + 前端(:5173)
+├── run.py              # 一键启动：后端(:8001) + 前端(:5173)
 ├── README.md           # 本文件
 │
 ├── backend/            # ── 后端（FastAPI）──
@@ -45,7 +45,7 @@ enterprise_rag_agent/
 ├── frontend/           # ── 前端（Vue3 + Vite）──
 │   ├── index.html      # HTML 入口
 │   ├── package.json    # 依赖：vue / vue-router / echarts / vite
-│   ├── vite.config.js  # 端口 5173，代理 /api → :8000
+│   ├── vite.config.js  # 端口 5173，代理 /api → :8001
 │   └── src/
 │       ├── main.js     # 入口 + 路由（4 个页面）
 │       ├── App.vue     # 根组件：侧栏 + 页面切换 + Toast
@@ -81,7 +81,7 @@ python run.py
 ```
 
 - 前端控制台：http://localhost:5173
-- 后端 API 文档：http://localhost:8000/docs
+- 后端 API 文档：http://localhost:8001/docs
 
 ## 核心链路（一句话讲清）
 

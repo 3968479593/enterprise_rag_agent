@@ -1,4 +1,4 @@
-"""一键启动：后端 (FastAPI :8000) + 前端 (Vite :5173)。
+"""一键启动：后端 (FastAPI :8001) + 前端 (Vite :5173)。
 
 用法：python run.py
 """
@@ -11,6 +11,9 @@ os.environ.setdefault("CHROMA_TELEMETRY_IMPL", "none")
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+
+# 后端端口：默认 8001（避开 ai-news-assistant 占用的 8000），可用环境变量 RAG_PORT 覆盖
+PORT = os.environ.get("RAG_PORT", "8001")
 
 
 def resolve_python():
@@ -33,9 +36,9 @@ def resolve_python():
     return [sys.executable]
 
 
-print("启动后端 (http://localhost:8000) ...")
+print(f"启动后端 (http://localhost:{PORT}) ...")
 backend = subprocess.Popen(
-    resolve_python() + ["-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
+    resolve_python() + ["-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", PORT, "--reload"],
     cwd=os.path.join(ROOT, "backend"),
 )
 
@@ -47,7 +50,7 @@ frontend = subprocess.Popen(
 )
 
 print()
-print("后端: http://localhost:8000  (API 文档: http://localhost:8000/docs)")
+print(f"后端: http://localhost:{PORT}  (API 文档: http://localhost:{PORT}/docs)")
 print("前端: http://localhost:5173")
 print("按 Ctrl+C 关闭")
 print()

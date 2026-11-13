@@ -11,6 +11,25 @@ _ROOT = Path(__file__).resolve().parent.parent
 _ENV_FILE = _ROOT / ".env"
 
 
+def _abs_path(value: str) -> str:
+    """相对路径锚定到 backend 目录。"""
+    p = Path(value)
+    if p.is_absolute():
+        return value
+    return str((_ROOT / p).resolve())
+
+
+def _abs_db_url(url: str) -> str:
+    """sqlite:///./rag.db → sqlite:///<backend 绝对路径>。"""
+    for marker in ("sqlite+aiosqlite:///", "sqlite:///"):
+        if url.startswith(marker):
+            raw = url[len(marker):]
+            if Path(raw).is_absolute():
+                return url
+            return marker + (_ROOT / raw).resolve().as_posix()
+    return url
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=str(_ENV_FILE),
@@ -69,6 +88,12 @@ class Settings(BaseSettings):
 
     # CORS：显式列出可信前端来源（不允许 * 与 credentials 同用）
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+    def model_post_init(self, __context) -> None:
+        """统一把相对路径转成基于 backend 目录的绝对路径（避免因启动目录不同产生两套数据）。"""
+        self.DATABASE_URL = _abs_db_url(self.DATABASE_URL)
+        self.CHROMA_PERSIST_DIR = _abs_path(self.CHROMA_PERSIST_DIR)
+        self.UPLOAD_DIR = _abs_path(self.UPLOAD_DIR)
 
 
 settings = Settings()
