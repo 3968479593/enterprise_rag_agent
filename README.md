@@ -86,6 +86,40 @@ python run.py
 - 前端控制台：http://localhost:5173
 - 后端 API 文档：http://localhost:8001/docs
 
+## Docker 部署
+
+镜像已发布到 Docker Hub：**https://hub.docker.com/r/wjj5/rag-agent**
+
+| 镜像 | 说明 | 压缩大小 |
+| --- | --- | --- |
+| `wjj5/rag-agent:backend-1.0` | 后端 API（FastAPI + ChromaDB） | 约 190 MB |
+| `wjj5/rag-agent:frontend-1.0` | 前端（Nginx + Vue3 构建产物） | 约 26 MB |
+
+### 方式一：使用已发布的镜像
+
+```bash
+# 1. 准备配置：复制模板为 .env，填 LLM_API_KEY 与 EMBEDDING_API_KEY
+#    （EMBEDDING_API_BASE 保持 https://open.bigmodel.cn/api/paas/v4）
+cp backend/.env.example .env
+
+# 2. 启动（本地没有镜像会自动拉取）
+docker compose -f docker-compose.deploy.yml up -d
+```
+
+### 方式二：从源码本地构建
+
+```bash
+cp backend/.env.example backend/.env   # 同上，填两个 key
+docker compose up -d --build
+```
+
+- 前端：http://localhost:5173
+- 后端文档：http://localhost:8001/docs
+- 业务数据持久化在命名卷 `rag_data`，容器重建不丢
+
+密钥通过 compose 的 `env_file` 在运行时注入，不写入镜像层（`.dockerignore` 已排除 `.env`）。
+完整部署步骤、常见问题与排错见 Docker Hub 页面。
+
 ## 核心链路（一句话讲清）
 
 1. **入库**：上传文档 → `rag/document_processor` 解析 → `utils/chunker` 切块 → `rag/embedding` 向量化 → 双写 `ChromaDB`（向量）+ `SQLite`（元数据）
