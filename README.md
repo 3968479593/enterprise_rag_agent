@@ -73,7 +73,10 @@ py -3.11 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r backend\requirements.txt
 cd frontend && npm install && cd ..
 
-# 2. 配置模型：复制 backend/.env.example 为 backend/.env，填 LLM 密钥
+# 2. 配置模型：复制 backend/.env.example 为 backend/.env
+#    - LLM_KEY 填你的 DeepSeek / 豆包 / OpenAI 密钥
+#    - EMBEDDING 三字段也必须填（DeepSeek 官方无 /embeddings 接口，回退会失败）
+#      推荐智谱 embedding-3（免费额度够开发用）或硅基流动 BAAI/bge-m3
 #    （无密钥可用 backend/scripts/mock_llm_server.py 联调）
 
 # 3. 一键启动

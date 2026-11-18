@@ -1,0 +1,28 @@
+# 本地虚拟环境与缓存不进构建上下文
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# 密钥文件绝不打进镜像层
+# 运行时的配置由 docker-compose 的 env_file 从宿主机注入容器环境变量，
+# 不依赖镜像内的 .env；.env.example 保留，供使用者照抄格式
+.env
+
+# 上传的业务文档不打进镜像（运行期由数据卷提供）
+data/uploads/
+
+# SQLite 的 WAL 临时文件不打进镜像
+*.db-shm
+*.db-wal
+
+# 说明：data/chroma_db/ 与 rag.db 需要进上下文，
+# 它们会被 Dockerfile 复制到 /opt/seed，作为新机器首次启动的种子知识库。
+
+# 日志与编辑器杂项
+*.log
+.idea/
+.vscode/
+.DS_Store

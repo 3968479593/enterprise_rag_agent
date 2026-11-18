@@ -1,0 +1,54 @@
+# 企业文档智能客服 —— 容器编排（可独立分发版本）
+# 代码与依赖全部在镜像内；知识库数据在命名卷 rag_data 里。
+# 换机器部署：docker compose up -d（镜像已在本地）或先 docker load 镜像包。
+# 访问：前端 http://localhost:5173   后端接口 http://localhost:8001/docs
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: enterprise-rag-backend:1.0
+    container_name: rag-backend
+    working_dir: /app
+    ports:
+      - "8001:8001"
+
+    # 密钥全部来自既有的 backend/.env，不烤进镜像
+    env_file:
+      - ./backend/.env
+    environment:
+      TZ: Asia/Shanghai
+      # 数据统一落在数据卷 /app/data：容器重建不丢，也不依赖宿主机目录
+      DATABASE_URL: sqlite:////app/data/rag.db
+      CHROMA_PERSIST_DIR: /app/data/chroma_db
+      UPLOAD_DIR: /app/data/uploads
+
+    volumes:
+      - rag_data:/app/data
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8001/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: enterprise-rag-frontend:1.0
+    container_name: rag-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  rag_data:
+    name: rag_data

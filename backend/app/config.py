@@ -60,11 +60,12 @@ class Settings(BaseSettings):
     LLM_MAX_TOKENS: int = 1024
     LLM_TIMEOUT: float = 60.0
 
-    # Embedding（可独立于 LLM：DeepSeek 官方无 embedding 接口，可指向硅基流动等）
-    # 留空则回退使用 LLM_API_BASE / LLM_API_KEY
+    # Embedding（独立于 LLM：DeepSeek 官方无 /embeddings 接口，务必补上一项）
+    # 支持智谱（embedding-3）、硅基流动（BAAI/bge-m3）、本地 Ollama 等 OpenAI 兼容端点
+    # 留空则回退 LLM_API_BASE / LLM_API_KEY —— DeepSeek 用户请勿留空
     EMBEDDING_API_BASE: str = ""
     EMBEDDING_API_KEY: str = ""
-    EMBEDDING_MODEL: str = "BAAI/bge-m3"
+    EMBEDDING_MODEL: str = "embedding-3"
 
     # 检索
     RETRIEVAL_TOP_K: int = 10   # 召回候选数
